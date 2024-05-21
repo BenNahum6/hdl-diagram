@@ -62,9 +62,53 @@ function activate(context) {
 			}
 		}
 
+		// Inserts the connection names into the array
+		let parts1 = [];
+		for (let i = 0; i < parsedUserText.parts.length; i++) {
+			parts1.push(parsedUserText.parts[i].name);
+			// console.log(parsedUserText.parts[i].name);	
+		}
+
+
+		for (let i = 0; i < parts1.length; i++) {
+			console.log(parts1[i]);
+			parsedUserText.parts[i].connections.forEach((connection, index) => {
+				console.log(connection);
+
+				// const fromPin = connection.from.pin;
+				// const fromBits = connection.from.bits;
+				// const toPin = connection.to.pin || null;
+				// const toBits = connection.to.bits || null;
+				// const toConst = connection.to.const || null;
+			
+				// console.log(`Connection ${index + 1}:`);
+				// console.log(`  From - Pin: ${fromPin}, Bits: ${fromBits}`);
+				
+				// if (toPin) {
+				// console.log(`  To - Pin: ${toPin}, Bits: ${toBits}`);
+				// } else if (toConst) {
+				// console.log(`  To - Const: ${toConst}`);
+				// }
+			});
+		}
+		  
+		  // Extract parts from the JSON data
+		  const parts = parsedUserText.parts;
+		  
+		  // Create the dictionary of connections
+		//   const connectionsDict = createConnectionsDict(parts);
+		  
+		//   console.log(connectionsDict);
+		  
+
+		
+
+
 		// debug output to check the analyze, just for us
 		vscode.window.showInformationMessage(INmainPin.toString());
 		vscode.window.showInformationMessage(OUTmainPin.toString());
+		vscode.window.showInformationMessage(parts1.toString());
+
 	});
 
 	context.subscriptions.push(disposable);
