@@ -1,7 +1,7 @@
 // // The module 'vscode' contains the VS Code extensibility API
 // // Import the module and reference it with the alias vscode in your code below
 // const vscode = require('vscode');
-const hdl_parser = require('hdl-parser');
+// const hdl_parser = require('hdl-parser');
 // // const path = require('path');
 // // const path = require('path');
 // // This method is called when your extension is activated
@@ -128,69 +128,150 @@ const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
 const JSON5 = require('json5');
+const hdl_parser = require('hdl-parser');
 
 
 
-// Function to generate SVG from JSON file using netlistsvg
-function generateNetlistAndSVG(netlistFilePath, outputSVGPath) {
 
-	const netlistsvgCommand = `netlistsvg "${netlistFilePath}" -o "${outputSVGPath}"`;
+// // Function to get the directory path of the currently active file
+// function getFilePath() {
+// 	// Check if there's an active text editor
+// 	let editor = vscode.window.activeTextEditor;
+// 	if (editor) {
+// 		// Get the URI of the currently open file
+// 		let uri = editor.document.uri;
+// 		// Convert the URI to a file path
+// 		let filePath = uri.fsPath;
+// 		// Return the directory path of the file
+// 		return path.dirname(filePath);
+// 	} else {
+// 		// If no active text editor, use the workspace root path
+// 		return vscode.workspace.rootPath;
+// 	}
+// }
 
-	exec(netlistsvgCommand, (error, stdout, stderr) => {
-		if (error) {
-			vscode.window.showErrorMessage(`Error 1: ${error.message}`);
-			return;
-		}
-		if (stderr) {
-			vscode.window.showErrorMessage(`Error 2: ${stderr}`);
-			return;
-		}
-		vscode.window.showInformationMessage(`SVG generated successfully! Output: ${outputSVGPath}`);
+// function SaveJsonFile(parsedJSON, name){
 
-		// Open the generated SVG file in VSCode
-		vscode.workspace.openTextDocument(outputSVGPath).then(doc => {
-			vscode.window.showTextDocument(doc, vscode.ViewColumn.Beside);
-		});
-	});
+// 	// Convert JSON object to JSON5 string
+// 	const jsonString = JSON5.stringify(parsedJSON, null, 2); // null, 2 for pretty-printing with 2 spaces;
+// 	console.log(jsonString)
 
-	console.log(netlistsvgCommand);
-}
+// 	const filePath = path.join(__dirname, name); // Specify the path and filename
+// 	console.log(filePath)
 
-// Function to get the directory path of the currently active file
-function getFilePath() {
-	// Check if there's an active text editor
-	let editor = vscode.window.activeTextEditor;
-	if (editor) {
-		// Get the URI of the currently open file
-		let uri = editor.document.uri;
-		// Convert the URI to a file path
-		let filePath = uri.fsPath;
-		// Return the directory path of the file
-		return path.dirname(filePath);
-	} else {
-		// If no active text editor, use the workspace root path
-		return vscode.workspace.rootPath;
-	}
-}
-
-function SaveJsonFile(parsedJSON, name){
-
-	// Convert JSON object to JSON5 string
-	const jsonString = JSON5.stringify(parsedJSON, null, 2); // null, 2 for pretty-printing with 2 spaces;
-	console.log(jsonString)
-
-	const filePath = path.join(__dirname, name); // Specify the path and filename
-	console.log(filePath)
-
-	fs.writeFile(filePath, jsonString, 'utf8', (err) => {
-		if (err) {
-			console.error('Error writing JSON file:', err);
-			return;
-		}
-		console.log('JSON file has been saved:', filePath);
-	});
+// 	fs.writeFile(filePath, jsonString, 'utf8', (err) => {
+// 		if (err) {
+// 			console.error('Error writing JSON file:', err);
+// 			return;
+// 		}
+// 		console.log('JSON file has been saved:', filePath);
+// 	});
 	
-	return filePath
+// 	return filePath
+// }
+
+function convertHdlToNetlist(hdlJson) {
+	if (!hdlJson || typeof hdlJson !== 'object') {
+	  throw new Error("Invalid HDL JSON input");
+	}
+  
+	const netlistJson = {
+	  modules: {}
+	};
+  
+	// Extract module name
+	const moduleName = hdlJson.name;
+	if (!moduleName) {
+	  throw new Error("HDL JSON must have a 'name' property");
+	}
+  
+	netlistJson.modules[moduleName] = {
+	  ports: {},
+	  cells: {}
+	};
+  
+	let bitCounter = 1;
+	const portMap = {};
+  
+	hdlJson.definitions.forEach(definition => {
+	  if (definition.type === 'IN' || definition.type === 'OUT') {
+		definition.pins.forEach(pin => {
+		  netlistJson.modules[moduleName].ports[pin.name] = {
+			direction: definition.type === 'IN' ? 'input' : 'output',
+			bits: [bitCounter]
+		  };
+		  portMap[pin.name] = bitCounter;
+		  bitCounter++;
+		});
+	  }
+	});
+  
+	hdlJson.parts.forEach((part, index) => {
+	  const cellName = `${part.name}${index + 1}`;
+	  netlistJson.modules[moduleName].cells[cellName] = {
+		type: part.name,
+		connections: {}
+	  };
+  
+	  part.connections.forEach(connection => {
+		const fromPin = connection.from.pin || connection.from.const;
+		const toPin = connection.to.pin || connection.to.const;
+  
+		if (!portMap[fromPin]) {
+		  portMap[fromPin] = bitCounter++;
+		}
+  
+		if (!portMap[toPin] && typeof toPin === 'string') {
+		  portMap[toPin] = bitCounter++;
+		}
+  
+		netlistJson.modules[moduleName].cells[cellName].connections[connection.from.pin] = [portMap[toPin]];
+	  });
+	});
+  
+	return netlistJson;
+  }
+
+function generateNetlistAndSVG(parsedJSON) {
+	const netlistJSON = JSON5.stringify(parsedJSON, null, 2); // null, 2 for pretty-printing with 2 spaces;
+	const netlistFilePath = path.join(__dirname, 'generated_netlist.json');
+	
+	// Write netlist JSON to file
+	fs.writeFileSync(netlistFilePath, netlistJSON, 'utf8');
+  
+	// Execute netlistsvg command
+	exec(`netlistsvg ${netlistFilePath} -o generated_output.svg`, (error, stdout, stderr) => {
+	  if (error) {
+		console.error(`Error: ${error.message}`);
+		return;
+	  }
+	  if (stderr) {
+		console.error(`Error: ${stderr}`);
+		return;
+	  }
+	  console.log(`SVG generated successfully! Output: ${stdout}`);
+	});
+}
+
+function generateNetlistAndSVG(parsedJSON) {
+	const netlistJSON = JSON5.stringify(parsedJSON, null, 2); // null, 2 for pretty-printing with 2 spaces;
+	const netlistFilePath = path.join(__dirname, 'generated_netlist.json');
+	
+	// Write netlist JSON to file
+	fs.writeFileSync(netlistFilePath, netlistJSON, 'utf8');
+  
+	// Execute netlistsvg command
+	exec(`netlistsvg ${netlistFilePath} -o generated_output.svg`, (error, stdout, stderr) => {
+	  if (error) {
+		console.error(`Error: ${error.message}`);
+		return;
+	  }
+	  if (stderr) {
+		console.error(`Error: ${stderr}`);
+		return;
+	  }
+	  console.log(`SVG generated successfully! Output: ${stdout}`);
+	});
 }
 
 function activate(context) {
@@ -220,19 +301,16 @@ function activate(context) {
 			return
 		}
 
-		const newJsonPath = SaveJsonFile(parsedJSON, 'data.json');
-		const OutputPath = 'c:\Users\Ben\hdl-diagram-master\hdl-diagram-master\hdl-diagram\generated_output.svg';
-		// OutputPath += `\\newOne`;
-
-		// let jsonFilePath = getCurrentFilePath();
-		// console.log(jsonFilePath);
 
 		try {
-			generateNetlistAndSVG(newJsonPath,OutputPath);
-			
-		} catch (error) {
-			vscode.window.showErrorMessage(`Error parsing HDL code: ${error.message}`);
-		}
+			let jsonForNetlist = convertHdlToNetlist(parsedJSON)
+			generateNetlistAndSVG(jsonForNetlist);
+		  } catch (error) {
+			console.error("Error converting HDL to Netlist:", error.message);
+		 }
+
+
+
 	});
 
 	context.subscriptions.push(disposable);
