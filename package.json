@@ -36,6 +36,7 @@
   "dependencies": {
     "hdl-parser": "^1.0.2",
     "json5": "^2.2.3",
+    "netlistsvg": "^1.0.2",
     "path": "^0.12.7"
   }
 }
