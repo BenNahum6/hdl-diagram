@@ -10,7 +10,7 @@ const netlistsvg = require('netlistsvg');
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
-    console.log('Congratulations, your extension "hdl-diagram" is now active!');
+    console.log('Congratulations, your extension "Hdl-Diagram" is now active!');
 
     let panel = null;
 
@@ -42,7 +42,7 @@ function activate(context) {
         const svgContent = await waitForFile(svgPath);
 
         if (panel) {
-            panel.webview.html = generateWebviewContent(svgContent);
+            panel.webview.html = generateWebviewContent(svgContent,parsedUserText);
         } else {
             panel = vscode.window.createWebviewPanel(
                 'svgViewer', 
@@ -50,7 +50,7 @@ function activate(context) {
                 vscode.ViewColumn.One, 
                 { enableScripts: true, retainContextWhenHidden: true }
             );
-            panel.webview.html = generateWebviewContent(svgContent);
+            panel.webview.html = generateWebviewContent(svgContent,parsedUserText);
             panel.onDidDispose(() => { panel = null; }, null, context.subscriptions);
         }
     };
@@ -120,7 +120,7 @@ function convertHdlToYosysJson(hdlJson) {
     hdlJson.parts.forEach((part, index) => {
         const cellName = `${part.name}${index + 1}`;
         yosysJson.modules[moduleName].cells[cellName] = {
-            type: "$" + part.name,
+            type: "$" + part.name.toUpperCase(),
             port_directions: {},
             connections: {}
         };
@@ -157,15 +157,20 @@ function convertHdlToYosysJson(hdlJson) {
     return yosysJson;
 }
 
+
+
+
 function saveYosysJson(yosysJson) {
     const jsonString = JSON.stringify(yosysJson, null, 2);
     const filePath = path.join(__dirname, 'yosys.json');
 
     fs.writeFileSync(filePath, jsonString);
-    console.log(`Yosys JSON file saved successfully at: ${filePath}`);
+    // console.log(`Yosys JSON file saved successfully at: ${filePath}`);
 
     return filePath;
 }
+
+
 
 async function renderJsonWithNetlistsvg(jsonPath, outputPath) {
     return new Promise((resolve, reject) => {
@@ -183,7 +188,7 @@ async function renderJsonWithNetlistsvg(jsonPath, outputPath) {
                 return;
             }
 
-            console.log('SVG rendered successfully:', outputPath);
+            // console.log('SVG rendered successfully:', outputPath);
             resolve();
         });
     });
@@ -200,25 +205,45 @@ async function waitForFile(filePath, timeout = 5000, interval = 100) {
     throw new Error(`File ${filePath} not found within timeout period.`);
 }
 
-function generateWebviewContent(svgContent) {
+function generateWebviewContent(svgContent,parsedUserText) {
     return `
         <!DOCTYPE html>
         <html lang="en">
         <head>
-            <style>
-                body {
-                    background-color: white;
-                    margin: 0;
-                    padding: 0;
-                }
-            </style>
+         <h1>Chip ${parsedUserText.name}</h1>
+         <h2>To update your diagram simply press CTRL + S</h2>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
             <title>SVG Viewer</title>
         </head>
         <body>
+            <div class = "hdlDiagram">
             ${svgContent}
+            </div>
         </body>
+         <style>
+                .hdlDiagram {
+                padding: 7vh;
+                border: 2px solid black;
+                }
+                body {
+                    
+                    background-color: white;
+                    display: grid;
+                    place-items: center;
+
+                }
+                h1 {
+                    color: black;
+                    font-size: 30px;
+                    text-align: center;
+                }
+                h2 {
+                    color: black;
+                    font-size: 15px;
+                    text-align: center;
+                }
+            </style>
         </html>
     `;
 }
