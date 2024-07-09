@@ -1,0 +1,98 @@
+{
+  "modules": {
+    "Demo": {
+      "ports": {
+        "a": {
+          "direction": "input",
+          "bits": [
+            1
+          ]
+        },
+        "b": {
+          "direction": "input",
+          "bits": [
+            2
+          ]
+        },
+        "c": {
+          "direction": "input",
+          "bits": [
+            3
+          ]
+        },
+        "out1": {
+          "direction": "output",
+          "bits": [
+            4
+          ]
+        },
+        "out2": {
+          "direction": "output",
+          "bits": [
+            5
+          ]
+        }
+      },
+      "cells": {
+        "And1": {
+          "type": "$and",
+          "port_directions": {
+            "a": "input",
+            "b": "input",
+            "out": "input",
+            "out1": "output"
+          },
+          "connections": {
+            "a": [
+              1
+            ],
+            "b": [
+              2
+            ],
+            "out": [
+              4
+            ]
+          }
+        },
+        "Or2": {
+          "type": "$or",
+          "port_directions": {
+            "a": "input",
+            "b": "output",
+            "c": "output",
+            "out": "input",
+            "out2": "output"
+          },
+          "connections": {
+            "a": [
+              2
+            ],
+            "b": [
+              3
+            ],
+            "out": [
+              5
+            ]
+          }
+        },
+        "Not3": {
+          "type": "$not",
+          "port_directions": {
+            "in": "input",
+            "c": "output",
+            "out": "input",
+            "out1": "output"
+          },
+          "connections": {
+            "in": [
+              3
+            ],
+            "out": [
+              4
+            ]
+          }
+        }
+      }
+    }
+  }
+}
