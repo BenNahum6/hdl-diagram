@@ -206,24 +206,7 @@ async function waitForFile(filePath, timeout = 5000, interval = 100) {
     throw new Error(`File ${filePath} not found within timeout period.`);
 }
 
-function convertTypeValuesToLowerCase(obj) {
-    if (Array.isArray(obj)) {
-        return obj.map(convertTypeValuesToLowerCase);
-    } else if (obj !== null && typeof obj === 'object') {
-        return Object.keys(obj).reduce((acc, key) => {
-            const value = obj[key];
-            if (key === 'type' && typeof value === 'string') {
-                acc[key] = value.toLowerCase();
-            } else {
-                acc[key] = convertTypeValuesToLowerCase(value);
-            }
-            return acc;
-        }, {});
-    }
-    return obj;
-}
-
-function generateWebviewContent(svgContent,parsedUserText) {
+function generateWebviewContent(svgContent) {
     return `
         <!DOCTYPE html>
         <html lang="en">
