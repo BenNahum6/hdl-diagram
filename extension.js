@@ -82,6 +82,155 @@ module.exports = {
     deactivate
 };
 
+// function convertHdlToYosysJson(hdlJson) {
+//     if (!hdlJson || typeof hdlJson !== 'object') {
+//         throw new Error("Invalid HDL JSON input");
+//     }
+
+//     const yosysJson = {
+//         modules: {}
+//     };
+
+//     const moduleName = hdlJson.name;
+//     if (!moduleName) {
+//         throw new Error("HDL JSON must have a 'name' property");
+//     }
+
+//     yosysJson.modules[moduleName] = {
+//         ports: {},
+//         cells: {}
+//     };
+
+//     let bitCounter = 1;
+//     const portMap = {};
+
+//     hdlJson.definitions.forEach(definition => {
+//         if (definition.type === 'IN' || definition.type === 'OUT') {
+//             definition.pins.forEach(pin => {
+//                 yosysJson.modules[moduleName].ports[pin.name] = {
+//                     direction: definition.type === 'IN' ? 'input' : 'output',
+//                     bits: [bitCounter]
+//                 };
+//                 portMap[pin.name] = bitCounter;
+//                 bitCounter++;
+//             });
+//         }
+//     });
+
+//     hdlJson.parts.forEach((part, index) => {
+//         const cellName = `${part.name}${index + 1}`;
+//         yosysJson.modules[moduleName].cells[cellName] = {
+//             type: "$" + part.name.toUpperCase(),
+//             port_directions: {},
+//             connections: {}
+//         };
+
+//         part.connections.forEach(connection => {
+//             const fromPin = connection.from.pin;
+//             const toPin = connection.to.pin;
+
+//             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
+//                 yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
+//             }
+
+//             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
+//                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
+//             }
+//         });
+
+//         part.connections.forEach(connection => {
+//             const fromPin = connection.from.pin || connection.from.const;
+//             const toPin = connection.to.pin || connection.to.const;
+
+//             if (!portMap[fromPin]) {
+//                 portMap[fromPin] = bitCounter++;
+//             }
+
+//             if (!portMap[toPin] && typeof toPin === 'string') {
+//                 portMap[toPin] = bitCounter++;
+//             }
+
+//             yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [portMap[toPin]];
+//         });
+//     });
+
+//     return yosysJson;
+// }
+
+// function convertHdlToYosysJson(hdlJson) {
+//     if (!hdlJson || typeof hdlJson !== 'object') {
+//         throw new Error("Invalid HDL JSON input");
+//     }
+
+//     const yosysJson = {
+//         modules: {}
+//     };
+
+//     const moduleName = hdlJson.name;
+//     if (!moduleName) {
+//         throw new Error("HDL JSON must have a 'name' property");
+//     }
+
+//     yosysJson.modules[moduleName] = {
+//         ports: {},
+//         cells: {}
+//     };
+
+//     let bitCounter = 1;
+//     const portMap = {};
+
+//     hdlJson.definitions.forEach(definition => {
+//         if (definition.type === 'IN' || definition.type === 'OUT') {
+//             definition.pins.forEach(pin => {
+//                 yosysJson.modules[moduleName].ports[pin.name] = {
+//                     direction: definition.type === 'IN' ? 'input' : 'output',
+//                     bits: [bitCounter]
+//                 };
+//                 portMap[pin.name] = bitCounter;
+//                 bitCounter++;
+//             });
+//         }
+//     });
+
+//     hdlJson.parts.forEach((part, index) => {
+//         const cellName = `${part.name}${index + 1}`;
+//         yosysJson.modules[moduleName].cells[cellName] = {
+//             type: String("$"+part.name.toLowerCase()),
+//             port_directions: {},
+//             connections: {}
+//         };
+
+//         part.connections.forEach(connection => {
+//             const fromPin = connection.from.pin || connection.from.const;
+//             const toPin = connection.to.pin || connection.to.const;
+
+//             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
+//                 yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
+//             }
+
+//             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
+//                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
+//             }
+
+//             if (!portMap[fromPin]) {
+//                 portMap[fromPin] = bitCounter++;
+//             }
+
+//             if (!portMap[toPin] && typeof toPin === 'string') {
+//                 portMap[toPin] = bitCounter++;
+//             }
+
+//             if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
+//                 yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
+//             }
+
+//             yosysJson.modules[moduleName].cells[cellName].connections[fromPin].push(portMap[toPin]);
+//         });
+//     });
+
+//     return yosysJson;
+// }
+
 function convertHdlToYosysJson(hdlJson) {
     if (!hdlJson || typeof hdlJson !== 'object') {
         throw new Error("Invalid HDL JSON input");
@@ -104,6 +253,7 @@ function convertHdlToYosysJson(hdlJson) {
     let bitCounter = 1;
     const portMap = {};
 
+    // Convert ports
     hdlJson.definitions.forEach(definition => {
         if (definition.type === 'IN' || definition.type === 'OUT') {
             definition.pins.forEach(pin => {
@@ -117,17 +267,18 @@ function convertHdlToYosysJson(hdlJson) {
         }
     });
 
+    // Convert parts to cells
     hdlJson.parts.forEach((part, index) => {
         const cellName = `${part.name}${index + 1}`;
         yosysJson.modules[moduleName].cells[cellName] = {
-            type: "$" + part.name.toUpperCase(),
+            type: part.name.toLowerCase(),
             port_directions: {},
             connections: {}
         };
 
         part.connections.forEach(connection => {
-            const fromPin = connection.from.pin;
-            const toPin = connection.to.pin;
+            const fromPin = connection.from.pin || connection.from.const;
+            const toPin = connection.to.pin || connection.to.const;
 
             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
                 yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
@@ -136,11 +287,6 @@ function convertHdlToYosysJson(hdlJson) {
             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
             }
-        });
-
-        part.connections.forEach(connection => {
-            const fromPin = connection.from.pin || connection.from.const;
-            const toPin = connection.to.pin || connection.to.const;
 
             if (!portMap[fromPin]) {
                 portMap[fromPin] = bitCounter++;
@@ -150,14 +296,16 @@ function convertHdlToYosysJson(hdlJson) {
                 portMap[toPin] = bitCounter++;
             }
 
-            yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [portMap[toPin]];
+            if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
+                yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
+            }
+
+            yosysJson.modules[moduleName].cells[cellName].connections[fromPin].push(portMap[toPin]);
         });
     });
 
     return yosysJson;
 }
-
-
 
 
 function saveYosysJson(yosysJson) {
@@ -210,6 +358,7 @@ function generateWebviewContent(svgContent,parsedUserText) {
         <!DOCTYPE html>
         <html lang="en">
         <head>
+        <script src="https://cdn.jsdelivr.net/npm/@yosys-symbiflow/netlistsvg@latest"></script>
          <h1>Chip ${parsedUserText.name}</h1>
          <h2>To update your diagram simply press CTRL + S</h2>
             <meta charset="UTF-8">
@@ -244,6 +393,8 @@ function generateWebviewContent(svgContent,parsedUserText) {
                     text-align: center;
                 }
             </style>
+        const container = document.getElementById('hdlDiagram');
+        netlistsvg.render(yosysJson, container);
         </html>
     `;
 }
