@@ -712,7 +712,34 @@ function convertHdlToYosysJson(hdlJson) {
     return yosysJson;
 }
 
+// Function to fix connections in the JSON
+function fixConnections(json) {
+    let demoModule = json.modules.Demo;
+    let cells = demoModule.cells;
 
+    // Fix connections for and1
+    if (cells.and1) {
+        cells.and1.connections.out1 = cells.and1.connections.out2;
+        delete cells.and1.connections.out2;
+    }
+
+    // Fix connections for and2
+    if (cells.and2) {
+        cells.and2.connections.out2 = cells.and2.connections.out1;
+        delete cells.and2.connections.out1;
+    }
+
+    // Fix connections for or3
+    if (cells.or3) {
+        cells.or3.connections.w = cells.and1.connections.out1;
+        cells.or3.connections.d = cells.and2.connections.out2;
+        cells.or3.connections.out = demoModule.ports.out.bits;
+        delete cells.or3.connections.out1;
+        delete cells.or3.connections.out2;
+    }
+
+    return json;
+}
 
 
 function saveYosysJson(yosysJson) {
