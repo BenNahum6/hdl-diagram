@@ -39,8 +39,8 @@
           "port_directions": {
             "a": "input",
             "b": "input",
-            "out2": "input",
-            "out1": "output"
+            "out": "input",
+            "outOne": "output"
           },
           "connections": {
             "a": [
@@ -49,46 +49,46 @@
             "b": [
               2
             ],
-            "out1": [
-              7
+            "out": [
+              4
             ]
           }
         },
         "and2": {
-          "type": "and",
+          "type": "$AND",
           "port_directions": {
-            "c": "input",
-            "d": "input",
-            "out1": "input",
-            "out2": "output"
+            "a": "input",
+            "b": "output",
+            "out": "input",
+            "outTwo": "output"
           },
           "connections": {
-            "c": [
-              3
+            "a": [
+              2
             ],
-            "d": [
-              4
+            "b": [
+              2
             ],
-            "out2": [
-              6
+            "out": [
+              5
             ]
           }
         },
         "or3": {
-          "type": "or",
+          "type": "$OR",
           "port_directions": {
-            "w": "input",
-            "out1": "output",
-            "d": "input",
-            "out2": "output",
+            "a": "input",
+            "outOne": "output",
+            "b": "input",
+            "outTwo": "output",
             "out": "input"
           },
           "connections": {
-            "w": [
-              7
+            "a": [
+              4
             ],
-            "d": [
-              6
+            "b": [
+              5
             ],
             "out": [
               5
