@@ -14,21 +14,33 @@
             2
           ]
         },
+        "c": {
+          "direction": "input",
+          "bits": [
+            3
+          ]
+        },
+        "d": {
+          "direction": "input",
+          "bits": [
+            4
+          ]
+        },
         "out": {
           "direction": "output",
           "bits": [
-            3
+            5
           ]
         }
       },
       "cells": {
         "and1": {
-          "type": "$AND",
+          "type": "and",
           "port_directions": {
             "a": "input",
             "b": "input",
-            "out": "input",
-            "outOne": "output"
+            "out2": "input",
+            "out1": "output"
           },
           "connections": {
             "a": [
@@ -37,49 +49,49 @@
             "b": [
               2
             ],
-            "out": [
-              4
+            "out1": [
+              7
             ]
           }
         },
         "and2": {
-          "type": "$AND",
+          "type": "and",
           "port_directions": {
-            "a": "input",
-            "b": "output",
-            "out": "input",
-            "outTwo": "output"
+            "c": "input",
+            "d": "input",
+            "out1": "input",
+            "out2": "output"
           },
           "connections": {
-            "a": [
-              2
+            "c": [
+              3
             ],
-            "b": [
-              2
+            "d": [
+              4
             ],
-            "out": [
-              5
+            "out2": [
+              6
             ]
           }
         },
         "or3": {
-          "type": "$OR",
+          "type": "or",
           "port_directions": {
-            "a": "input",
-            "outOne": "output",
-            "b": "input",
-            "outTwo": "output",
+            "w": "input",
+            "out1": "output",
+            "d": "input",
+            "out2": "output",
             "out": "input"
           },
           "connections": {
-            "a": [
-              4
+            "w": [
+              7
             ],
-            "b": [
-              5
+            "d": [
+              6
             ],
             "out": [
-              3
+              5
             ]
           }
         }
