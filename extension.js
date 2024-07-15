@@ -32,10 +32,11 @@ function activate(context) {
         }
 
         const yosysJson = convertHdlToYosysJson(parsedUserText);
-        const svgPath = path.join(__dirname, 'svgTest.svg');
+        const svgPath = path.join(__dirname, 'svgFile.svg');
         const yosysPath = saveYosysJson(yosysJson);
+        const skinFilePath = path.join(__dirname,'skinFile.svg');
 
-        await renderJsonWithNetlistsvg(yosysPath, svgPath);
+        await renderJsonWithNetlistsvg(yosysPath, svgPath,skinFilePath);
 
         const svgContent = await waitForFile(svgPath);
 
@@ -174,7 +175,7 @@ function convertHdlToYosysJson(hdlJson) {
 
 function saveYosysJson(yosysJson) {
     const jsonString = JSON.stringify(yosysJson, null, 2);
-    const filePath = path.join(__dirname, 'yosys.json');
+    const filePath = path.join(__dirname, 'yosysJsonFile.json');
 
     fs.writeFileSync(filePath, jsonString);
 
@@ -182,9 +183,9 @@ function saveYosysJson(yosysJson) {
 }
 
 
-async function renderJsonWithNetlistsvg(jsonPath, outputPath) {
+async function renderJsonWithNetlistsvg(jsonPath, outputPath,skinFilePath) {
     return new Promise((resolve, reject) => {
-        const netlistsvgCommand = `netlistsvg ${jsonPath} -o ${outputPath}`;
+        const netlistsvgCommand = `netlistsvg ${jsonPath} -o ${outputPath} --skin ${skinFilePath}`;
 
         exec(netlistsvgCommand, (error, stdout, stderr) => {
             if (error) {
@@ -230,6 +231,7 @@ function generateWebviewContent(svgContent, parsedUserText) {
                 ${svgContent}
             </div>
             <style>
+
                 .hdlDiagram {
                     padding: 7vh;
                     border: 2px solid black;

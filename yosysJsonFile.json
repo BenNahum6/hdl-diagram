@@ -1,0 +1,152 @@
+{
+  "modules": {
+    "Demo": {
+      "ports": {
+        "A": {
+          "direction": "input",
+          "bits": [
+            1
+          ]
+        },
+        "B": {
+          "direction": "input",
+          "bits": [
+            2
+          ]
+        },
+        "C": {
+          "direction": "input",
+          "bits": [
+            3
+          ]
+        },
+        "D": {
+          "direction": "input",
+          "bits": [
+            4
+          ]
+        },
+        "E": {
+          "direction": "input",
+          "bits": [
+            5
+          ]
+        },
+        "OUT": {
+          "direction": "output",
+          "bits": [
+            6
+          ]
+        }
+      },
+      "cells": {
+        "And1": {
+          "type": "$and",
+          "port_directions": {
+            "A": "input",
+            "B": "input",
+            "Y": "output",
+            "ANDOUT1": "input"
+          },
+          "connections": {
+            "A": [
+              1
+            ],
+            "B": [
+              2
+            ],
+            "Y": [
+              8
+            ]
+          }
+        },
+        "And2": {
+          "type": "$and",
+          "port_directions": {
+            "A": "input",
+            "ANDOUT1": "input",
+            "B": "input",
+            "C": "input",
+            "Y": "output",
+            "ANDOUT2": "input"
+          },
+          "connections": {
+            "A": [
+              8
+            ],
+            "B": [
+              3
+            ],
+            "Y": [
+              9
+            ]
+          }
+        },
+        "Or3": {
+          "type": "$or",
+          "port_directions": {
+            "A": "input",
+            "B": "input",
+            "Y": "output",
+            "OROUT1": "input"
+          },
+          "connections": {
+            "A": [
+              2
+            ],
+            "B": [
+              1
+            ],
+            "Y": [
+              10
+            ]
+          }
+        },
+        "Or4": {
+          "type": "$or",
+          "port_directions": {
+            "A": "input",
+            "D": "input",
+            "B": "input",
+            "E": "input",
+            "Y": "output",
+            "OUT": "output"
+          },
+          "connections": {
+            "A": [
+              4
+            ],
+            "B": [
+              5
+            ],
+            "Y": [
+              6
+            ]
+          }
+        },
+        "Xor5": {
+          "type": "$xor",
+          "port_directions": {
+            "A": "input",
+            "ANDOUT2": "input",
+            "B": "input",
+            "OROUT1": "input",
+            "Y": "output",
+            "OUT": "output"
+          },
+          "connections": {
+            "A": [
+              9
+            ],
+            "B": [
+              10
+            ],
+            "Y": [
+              6
+            ]
+          }
+        }
+      }
+    }
+  }
+}
