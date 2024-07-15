@@ -32,9 +32,8 @@ function activate(context) {
         }
 
         const yosysJson = convertHdlToYosysJson(parsedUserText);
-        const fixConnection = fixConnections(yosysJson);
         const svgPath = path.join(__dirname, 'svgTest.svg');
-        const yosysPath = saveYosysJson(fixConnection);
+        const yosysPath = saveYosysJson(yosysJson);
 
         await renderJsonWithNetlistsvg(yosysPath, svgPath);
 
@@ -81,154 +80,6 @@ module.exports = {
     deactivate
 };
 
-// function convertHdlToYosysJson(hdlJson) {
-//     if (!hdlJson || typeof hdlJson !== 'object') {
-//         throw new Error("Invalid HDL JSON input");
-//     }
-
-//     const yosysJson = {
-//         modules: {}
-//     };
-
-//     const moduleName = hdlJson.name;
-//     if (!moduleName) {
-//         throw new Error("HDL JSON must have a 'name' property");
-//     }
-
-//     yosysJson.modules[moduleName] = {
-//         ports: {},
-//         cells: {}
-//     };
-
-//     let bitCounter = 1;
-//     const portMap = {};
-
-//     hdlJson.definitions.forEach(definition => {
-//         if (definition.type === 'IN' || definition.type === 'OUT') {
-//             definition.pins.forEach(pin => {
-//                 yosysJson.modules[moduleName].ports[pin.name] = {
-//                     direction: definition.type === 'IN' ? 'input' : 'output',
-//                     bits: [bitCounter]
-//                 };
-//                 portMap[pin.name] = bitCounter;
-//                 bitCounter++;
-//             });
-//         }
-//     });
-
-//     hdlJson.parts.forEach((part, index) => {
-//         const cellName = `${part.name}${index + 1}`;
-//         yosysJson.modules[moduleName].cells[cellName] = {
-//             type: "$" + part.name.toUpperCase(),
-//             port_directions: {},
-//             connections: {}
-//         };
-
-//         part.connections.forEach(connection => {
-//             const fromPin = connection.from.pin;
-//             const toPin = connection.to.pin;
-
-//             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
-//                 yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
-//             }
-
-//             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
-//                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
-//             }
-//         });
-
-//         part.connections.forEach(connection => {
-//             const fromPin = connection.from.pin || connection.from.const;
-//             const toPin = connection.to.pin || connection.to.const;
-
-//             if (!portMap[fromPin]) {
-//                 portMap[fromPin] = bitCounter++;
-//             }
-
-//             if (!portMap[toPin] && typeof toPin === 'string') {
-//                 portMap[toPin] = bitCounter++;
-//             }
-
-//             yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [portMap[toPin]];
-//         });
-//     });
-
-//     return yosysJson;
-// }
-
-// function convertHdlToYosysJson(hdlJson) {
-//     if (!hdlJson || typeof hdlJson !== 'object') {
-//         throw new Error("Invalid HDL JSON input");
-//     }
-
-//     const yosysJson = {
-//         modules: {}
-//     };
-
-//     const moduleName = hdlJson.name;
-//     if (!moduleName) {
-//         throw new Error("HDL JSON must have a 'name' property");
-//     }
-
-//     yosysJson.modules[moduleName] = {
-//         ports: {},
-//         cells: {}
-//     };
-
-//     let bitCounter = 1;
-//     const portMap = {};
-
-//     hdlJson.definitions.forEach(definition => {
-//         if (definition.type === 'IN' || definition.type === 'OUT') {
-//             definition.pins.forEach(pin => {
-//                 yosysJson.modules[moduleName].ports[pin.name] = {
-//                     direction: definition.type === 'IN' ? 'input' : 'output',
-//                     bits: [bitCounter]
-//                 };
-//                 portMap[pin.name] = bitCounter;
-//                 bitCounter++;
-//             });
-//         }
-//     });
-
-//     hdlJson.parts.forEach((part, index) => {
-//         const cellName = `${part.name}${index + 1}`;
-//         yosysJson.modules[moduleName].cells[cellName] = {
-//             type: String("$"+part.name.toLowerCase()),
-//             port_directions: {},
-//             connections: {}
-//         };
-
-//         part.connections.forEach(connection => {
-//             const fromPin = connection.from.pin || connection.from.const;
-//             const toPin = connection.to.pin || connection.to.const;
-
-//             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
-//                 yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
-//             }
-
-//             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
-//                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
-//             }
-
-//             if (!portMap[fromPin]) {
-//                 portMap[fromPin] = bitCounter++;
-//             }
-
-//             if (!portMap[toPin] && typeof toPin === 'string') {
-//                 portMap[toPin] = bitCounter++;
-//             }
-
-//             if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
-//                 yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
-//             }
-
-//             yosysJson.modules[moduleName].cells[cellName].connections[fromPin].push(portMap[toPin]);
-//         });
-//     });
-
-//     return yosysJson;
-// }
 
 function convertHdlToYosysJson(hdlJson) {
     if (!hdlJson || typeof hdlJson !== 'object') {
@@ -256,11 +107,11 @@ function convertHdlToYosysJson(hdlJson) {
     hdlJson.definitions.forEach(definition => {
         if (definition.type === 'IN' || definition.type === 'OUT') {
             definition.pins.forEach(pin => {
-                yosysJson.modules[moduleName].ports[pin.name] = {
+                yosysJson.modules[moduleName].ports[pin.name.toUpperCase()] = {
                     direction: definition.type === 'IN' ? 'input' : 'output',
                     bits: [bitCounter]
                 };
-                portMap[pin.name] = bitCounter;
+                portMap[pin.name.toUpperCase()] = bitCounter;
                 bitCounter++;
             });
         }
@@ -270,23 +121,33 @@ function convertHdlToYosysJson(hdlJson) {
     hdlJson.parts.forEach((part, index) => {
         const cellName = `${part.name}${index + 1}`;
         yosysJson.modules[moduleName].cells[cellName] = {
-            type: part.name.toLowerCase(),
+            type: "$" + part.name.toLowerCase(),
             port_directions: {},
             connections: {}
         };
 
         part.connections.forEach(connection => {
-            const fromPin = connection.from.pin || connection.from.const;
-            const toPin = connection.to.pin || connection.to.const;
+            const fromPin = connection.from.pin.toUpperCase();
+            const toPin = connection.to.pin.toUpperCase();
 
+            // Check and set port directions based on the defined ports
             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
-                yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = 'input';
+                let portDirection = 'output';
+                if (yosysJson.modules[moduleName].ports[fromPin]) {
+                    portDirection = yosysJson.modules[moduleName].ports[fromPin].direction;
+                }
+                yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] = portDirection;
             }
 
             if (toPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[toPin]) {
-                yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = 'output';
+                let portDirection = 'input';
+                if (yosysJson.modules[moduleName].ports[toPin]) {
+                    portDirection = yosysJson.modules[moduleName].ports[toPin].direction;
+                }
+                yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = portDirection;
             }
 
+            // Assign bit numbers to ports
             if (!portMap[fromPin]) {
                 portMap[fromPin] = bitCounter++;
             }
@@ -295,6 +156,7 @@ function convertHdlToYosysJson(hdlJson) {
                 portMap[toPin] = bitCounter++;
             }
 
+            // Add connections
             if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
                 yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
             }
@@ -306,34 +168,8 @@ function convertHdlToYosysJson(hdlJson) {
     return yosysJson;
 }
 
-// Function to fix connections in the JSON
-function fixConnections(json) {
-    let demoModule = json.modules.Demo;
-    let cells = demoModule.cells;
 
-    // Fix connections for and1
-    if (cells.and1) {
-        cells.and1.connections.out1 = cells.and1.connections.out2;
-        delete cells.and1.connections.out2;
-    }
 
-    // Fix connections for and2
-    if (cells.and2) {
-        cells.and2.connections.out2 = cells.and2.connections.out1;
-        delete cells.and2.connections.out1;
-    }
-
-    // Fix connections for or3
-    if (cells.or3) {
-        cells.or3.connections.w = cells.and1.connections.out1;
-        cells.or3.connections.d = cells.and2.connections.out2;
-        cells.or3.connections.out = demoModule.ports.out.bits;
-        delete cells.or3.connections.out1;
-        delete cells.or3.connections.out2;
-    }
-
-    return json;
-}
 
 
 function saveYosysJson(yosysJson) {
@@ -344,6 +180,7 @@ function saveYosysJson(yosysJson) {
 
     return filePath;
 }
+
 
 async function renderJsonWithNetlistsvg(jsonPath, outputPath) {
     return new Promise((resolve, reject) => {
@@ -389,11 +226,9 @@ function generateWebviewContent(svgContent, parsedUserText) {
             <title>SVG Viewer</title>
         </head>
         <body>
-            <h1>Chip ${parsedUserText.name}</h1>
             <div class="hdlDiagram">
                 ${svgContent}
             </div>
-            <script src="https://cdn.jsdelivr.net/npm/@yosys-symbiflow/netlistsvg@latest"></script>
             <style>
                 .hdlDiagram {
                     padding: 7vh;
