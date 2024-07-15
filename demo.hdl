@@ -1,0 +1,12 @@
+CHIP Demo{
+    IN a,b,c,d,e;
+    OUT out;
+
+    PARTS:
+    And(a=a, b=b, y=andOut1);
+    And(a=andOut1, b=c, y=andOut2);
+    Or(a=b, b=a, y=orOut1);
+    Or(a=d, b=e, y=out);
+    Xor(a=andOut2, b=orOut1, y=out);
+ 
+}
