@@ -39,27 +39,13 @@ Run the extension:
 
 Press F5 to open a new VSCode window with the extension loaded.
 
-## Known Issues
+## Contributing
 
-Calling out known issues can help limit users opening duplicate issues against your extension.
+Contributions are welcome! Please fork the repository and submit a pull request with your changes.
 
-## Release Notes
+## License
 
-Users appreciate release notes as you update your extension.
-
-### 1.0.0
-
-Initial release of ...
-
-### 1.0.1
-
-Fixed issue #.
-
-### 1.1.0
-
-Added features X, Y, and Z.
-
----
+open source.
 
 ## Working with Markdown
 
