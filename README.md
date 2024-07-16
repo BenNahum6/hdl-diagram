@@ -1,16 +1,10 @@
-# hdl-diagram README
+# Hdl-Diagram VSCode Extension
 
 This is the README for your extension "hdl-diagram". After writing up a brief description, we recommend including the following sections.
 
-## Features
+## Overview
 
-Describe specific features of your extension including screenshots of your extension in action. Image paths are relative to this README file.
-
-For example if there is an image subfolder under your extension project workspace:
-
-\!\[feature X\]\(images/feature-x.png\)
-
-> Tip: Many popular extensions utilize animations. This is an excellent way to show off your extension! We recommend short, focused animations that are easy to follow.
+Hdl-Diagram is a Visual Studio Code extension that provides real-time visualization of HDL (Hardware Description Language) files. This extension parses HDL files, converts them to a JSON representation suitable for yosys, and renders the circuit diagram as an SVG using netlistsvg.
 
 ## Requirements
 
