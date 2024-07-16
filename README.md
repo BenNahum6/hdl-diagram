@@ -9,6 +9,7 @@ Hdl-Diagram is a Visual Studio Code extension that provides real-time visualizat
 ## Features
 
 * Parses .hdl files to extract circuit information.
+* git clone https://github.com/your-repo/hdl-diagram
 * Converts HDL data into yosys-compatible JSON.
 * Uses netlistsvg to render circuit diagrams as SVG.
 * Automatically updates the diagram on file save.
