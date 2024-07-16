@@ -13,16 +13,31 @@ Hdl-Diagram is a Visual Studio Code extension that provides real-time visualizat
 * Uses netlistsvg to render circuit diagrams as SVG.
 * Automatically updates the diagram on file save.
 
-## Extension Settings
+## Installation
 
-Include if your extension adds any VS Code settings through the `contributes.configuration` extension point.
+Clone the repository to your local machine:
 
-For example:
+bash
+Copy code
+git clone https://github.com/your-repo/hdl-diagram
+Navigate to the extension directory:
 
-This extension contributes the following settings:
+bash
+Copy code
+cd hdl-diagram
+Install dependencies:
 
-* `myExtension.enable`: Enable/disable this extension.
-* `myExtension.thing`: Set to `blah` to do something.
+bash
+Copy code
+npm install
+Open the extension in Visual Studio Code:
+
+bash
+Copy code
+code .
+Run the extension:
+
+Press F5 to open a new VSCode window with the extension loaded.
 
 ## Known Issues
 
