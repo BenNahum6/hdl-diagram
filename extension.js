@@ -36,7 +36,7 @@ function activate(context) {
         const yosysPath = saveYosysJson(yosysJson);
         const skinFilePath = path.join(__dirname,'skinFile.svg');
 
-        await renderJsonWithNetlistsvg(yosysPath, svgPath,skinFilePath);
+        await renderJsonWithNetlistsvg(yosysPath, svgPath, skinFilePath);
 
         const svgContent = await waitForFile(svgPath);
 
@@ -81,7 +81,6 @@ module.exports = {
     deactivate
 };
 
-
 function convertHdlToYosysJson(hdlJson) {
     if (!hdlJson || typeof hdlJson !== 'object') {
         throw new Error("Invalid HDL JSON input");
@@ -108,11 +107,15 @@ function convertHdlToYosysJson(hdlJson) {
     hdlJson.definitions.forEach(definition => {
         if (definition.type === 'IN' || definition.type === 'OUT') {
             definition.pins.forEach(pin => {
-                yosysJson.modules[moduleName].ports[pin.name.toUpperCase()] = {
-                    direction: definition.type === 'IN' ? 'input' : 'output',
+
+                const portName = pin.name.toUpperCase();
+                const portDirection = definition.type === 'IN' ? 'input' : 'output';
+                yosysJson.modules[moduleName].ports[portName] = {
+                    direction: portDirection,
                     bits: [bitCounter]
                 };
-                portMap[pin.name.toUpperCase()] = bitCounter;
+
+                portMap[portName] = bitCounter;
                 bitCounter++;
             });
         }
@@ -128,9 +131,9 @@ function convertHdlToYosysJson(hdlJson) {
         };
 
         part.connections.forEach(connection => {
-            const fromPin = connection.from.pin.toUpperCase();
-            const toPin = connection.to.pin.toUpperCase();
-
+            let fromPin = connection.from.pin.toUpperCase();
+            let toPin = connection.to.pin.toUpperCase();
+            
             // Check and set port directions based on the defined ports
             if (fromPin && !yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin]) {
                 let portDirection = 'output';
@@ -148,6 +151,8 @@ function convertHdlToYosysJson(hdlJson) {
                 yosysJson.modules[moduleName].cells[cellName].port_directions[toPin] = portDirection;
             }
 
+            yosysJson.modules[moduleName].cells[cellName].port_directions['Y'] = "output";
+
             // Assign bit numbers to ports
             if (!portMap[fromPin]) {
                 portMap[fromPin] = bitCounter++;
@@ -160,18 +165,30 @@ function convertHdlToYosysJson(hdlJson) {
             // Add connections
             if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
                 yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
+                yosysJson.modules[moduleName].cells[cellName].connections['Y'] = [];
+            }
+            
+
+            if (!yosysJson.modules[moduleName].cells[cellName].connections[fromPin]) {
+                yosysJson.modules[moduleName].cells[cellName].connections[fromPin] = [];
+            }
+  
+            if (yosysJson.modules[moduleName].cells[cellName].port_directions[fromPin] === 'output') {
+                yosysJson.modules[moduleName].cells[cellName].connections['Y'].push(portMap[toPin]);
+            }else{
+                yosysJson.modules[moduleName].cells[cellName].connections[fromPin].push(portMap[toPin]);
             }
 
-            yosysJson.modules[moduleName].cells[cellName].connections[fromPin].push(portMap[toPin]);
+            for (const conn in yosysJson.modules[moduleName].cells[cellName].connections) {
+                if (yosysJson.modules[moduleName].cells[cellName].connections[conn].length === 0) {
+                    delete yosysJson.modules[moduleName].cells[cellName].connections[conn];
+                }
+            }
+ 
         });
     });
-
     return yosysJson;
 }
-
-
-
-
 
 function saveYosysJson(yosysJson) {
     const jsonString = JSON.stringify(yosysJson, null, 2);
@@ -181,7 +198,6 @@ function saveYosysJson(yosysJson) {
 
     return filePath;
 }
-
 
 async function renderJsonWithNetlistsvg(jsonPath, outputPath,skinFilePath) {
     return new Promise((resolve, reject) => {

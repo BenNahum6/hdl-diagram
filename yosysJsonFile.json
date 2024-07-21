@@ -26,16 +26,10 @@
             4
           ]
         },
-        "E": {
-          "direction": "input",
-          "bits": [
-            5
-          ]
-        },
         "OUT": {
           "direction": "output",
           "bits": [
-            6
+            5
           ]
         }
       },
@@ -44,9 +38,10 @@
           "type": "$and",
           "port_directions": {
             "A": "input",
-            "B": "input",
             "Y": "output",
-            "ANDOUT1": "input"
+            "B": "input",
+            "YYES": "output",
+            "OUT1": "input"
           },
           "connections": {
             "A": [
@@ -56,93 +51,29 @@
               2
             ],
             "Y": [
-              8
+              7
             ]
           }
         },
-        "And2": {
-          "type": "$and",
-          "port_directions": {
-            "A": "input",
-            "ANDOUT1": "input",
-            "B": "input",
-            "C": "input",
-            "Y": "output",
-            "ANDOUT2": "input"
-          },
-          "connections": {
-            "A": [
-              8
-            ],
-            "B": [
-              3
-            ],
-            "Y": [
-              9
-            ]
-          }
-        },
-        "Or3": {
+        "Or2": {
           "type": "$or",
           "port_directions": {
             "A": "input",
-            "B": "input",
+            "OUT1": "input",
             "Y": "output",
-            "OROUT1": "input"
-          },
-          "connections": {
-            "A": [
-              2
-            ],
-            "B": [
-              1
-            ],
-            "Y": [
-              10
-            ]
-          }
-        },
-        "Or4": {
-          "type": "$or",
-          "port_directions": {
-            "A": "input",
+            "B": "input",
             "D": "input",
-            "B": "input",
-            "E": "input",
-            "Y": "output",
             "OUT": "output"
           },
           "connections": {
             "A": [
+              7
+            ],
+            "B": [
               4
             ],
-            "B": [
+            "Y": [
               5
-            ],
-            "Y": [
-              6
-            ]
-          }
-        },
-        "Xor5": {
-          "type": "$xor",
-          "port_directions": {
-            "A": "input",
-            "ANDOUT2": "input",
-            "B": "input",
-            "OROUT1": "input",
-            "Y": "output",
-            "OUT": "output"
-          },
-          "connections": {
-            "A": [
-              9
-            ],
-            "B": [
-              10
-            ],
-            "Y": [
-              6
             ]
           }
         }
