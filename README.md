@@ -19,6 +19,9 @@ Press F5 to open a new VSCode window with the extension loaded.
 ## Features
 
 
+## Video
+
+
 ## Contributing
 
 Contributions are welcome! Please fork the repository and submit a pull request with your changes.
