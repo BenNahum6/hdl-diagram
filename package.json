@@ -1,11 +1,14 @@
 {
   "name": "hdl-diagram",
   "displayName": "hdl-diagram",
-  "description": "",
+  "publisher": "OrelDiei",
+  "icon": "Images/hdl-diagram-logo.png",
+  "description": "HDL-Diagram extension to Visualize HDL files",
   "version": "0.0.1",
   "engines": {
-    "vscode": "^1.88.0"
+    "vscode": "^1.90.0"
   },
+  
   "categories": [
     "Other"
   ],
