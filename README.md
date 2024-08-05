@@ -19,7 +19,6 @@ Hdl-Diagram is a Visual Studio Code extension that provides real-time visualizat
 3. Press "CTRL + S" to update your diagram.
 
 ## Photo
-
 ![alt text](demo.png)
 
 ## License
