@@ -14,8 +14,8 @@ git clone https://github.com/BenNahum6/hdl-diagram
 
 ## How to run
 
-1. Press F5 to open the commands in VSCode window.
-2. Press F1 to run this command "Visualize HDL-Diagram".
+1. Press F1 or "CTRL + SHIFT + P" to open command search.
+2. Search "Visualize HDL-Diagram" Command to run the extension.
 3. Press "CTRL + S" to update your diagram.
 
 ## Photo
