@@ -4,7 +4,10 @@
   "publisher": "OrelDiei",
   "icon": "Images/hdl-diagram-logo.png",
   "description": "HDL-Diagram extension to Visualize HDL files",
-  "version": "0.0.2",
+  "repository": {
+    "url": "https://github.com/BenNahum6/hdl-diagram"
+  },
+  "version": "0.0.3",
   "engines": {
     "vscode": "^1.90.0"
   },

@@ -6,7 +6,7 @@ we used Netlistsvg to create SVG diagram [Netlistsvg](https://github.com/nturley
 
 ## Installation
 
-1. Run this command to install the extension 
+1. Run this command to install the extension
 ```sh
 git clone https://github.com/BenNahum6/hdl-diagram
 ```
