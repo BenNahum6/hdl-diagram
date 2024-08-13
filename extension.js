@@ -1,6 +1,6 @@
 const vscode = require('vscode');
 const hdl_parser = require('hdl-parser');
-const netlistsvg = require(netlistsvg);
+const netlistsvg = require('netlistsvg');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
@@ -18,7 +18,7 @@ function activate(context) {
         let textPath = document.uri.fsPath;
 
         if (!textPath.endsWith(".hdl")) {
-            vscode.window.showInformationMessage("Error: this file does not end with .hdl");
+            vscode.window.showInformationMessage("Error: this file does not end with .hdl \n if you are not using the extension simply disable it or ignore this msg");
             return;
         }
 
