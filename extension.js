@@ -203,7 +203,7 @@ async function renderJsonWithNetlistsvg(jsonPath, outputPath,skinFilePath) {
     return new Promise((resolve, reject) => {
         const netlistsvgCommand = `netlistsvg ${jsonPath} -o ${outputPath} --skin ${skinFilePath}`;
 
-        exec(netlistsvgCommand, (error, stdout, stderr) => {
+        exec(netlistsvgCommand, { cwd: process.cwd() },(error, stdout, stderr) => {
             if (error) {
                 console.error(`Error rendering JSON with netlistsvg: ${error.message}`);
                 reject(error);
