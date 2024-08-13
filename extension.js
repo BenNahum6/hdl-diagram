@@ -1,5 +1,6 @@
 const vscode = require('vscode');
 const hdl_parser = require('hdl-parser');
+const netlistsvg = require(netlistsvg);
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
