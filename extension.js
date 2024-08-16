@@ -4,12 +4,34 @@ const netlistsvg = require('netlistsvg');
 const fs = require('fs');
 const path = require('path');
 const { exec } = require('child_process');
+const { execSync } = require('child_process');
+
 
 /**
  * @param {vscode.ExtensionContext} context
  */
 function activate(context) {
     console.log('Congratulations, your extension "Hdl-Diagram" is now active!');
+ 
+function checkAndInstallLibrary(libraryName) {
+    try {
+        // Check if the library is installed globally
+        execSync(`npm list -g ${libraryName}`, { stdio: 'ignore' });
+        console.log(`${libraryName} is already installed globally.`);
+    } catch (err) {
+        console.log(`${libraryName} is not installed globally. Installing now...`);
+        try {
+            // Install the library globally
+            execSync(`npm install -g ${libraryName}`, { stdio: 'inherit' });
+            console.log(`${libraryName} has been installed successfully.`);
+        } catch (installErr) {
+            console.error(`Failed to install ${libraryName}:`, installErr);
+        }
+    }
+}
+
+// Usage
+checkAndInstallLibrary('netlistsvg');
 
     let panel = null;
 
